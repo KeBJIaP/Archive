@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31005.135
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GZipTest", "GZipTest\GZipTest.csproj", "{1354F5E2-920F-4336-81C2-82489802BFEF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{CB07467A-C5E7-4984-A588-80DEFBD1DF95}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Archive.Common.Containers", "Archive.Common.Containers\Archive.Common.Containers.csproj", "{D849E09D-26C0-4AFA-A235-828C77649A5C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Archive.Common.Containers.UnityContainers", "Archive.Common.Containers.UnityContainers\Archive.Common.Containers.UnityContainers.csproj", "{DF9648AA-3C16-46AD-80C0-161E5E19EEAE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Archive.Application.Common", "Archive.Application.Common\Archive.Application.Common.csproj", "{FEBA4CB8-633A-4819-9F1A-25DA45EBA410}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Archive.Compressing", "Archive.Compressing\Archive.Compressing.csproj", "{CEEAA302-1636-455B-98AA-84FE47E940E3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Archive.Decompressing", "Archive.Decompressing\Archive.Decompressing.csproj", "{51E1A61A-DB07-4199-A910-1A803F890312}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1354F5E2-920F-4336-81C2-82489802BFEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1354F5E2-920F-4336-81C2-82489802BFEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1354F5E2-920F-4336-81C2-82489802BFEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1354F5E2-920F-4336-81C2-82489802BFEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D849E09D-26C0-4AFA-A235-828C77649A5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D849E09D-26C0-4AFA-A235-828C77649A5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D849E09D-26C0-4AFA-A235-828C77649A5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D849E09D-26C0-4AFA-A235-828C77649A5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF9648AA-3C16-46AD-80C0-161E5E19EEAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF9648AA-3C16-46AD-80C0-161E5E19EEAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF9648AA-3C16-46AD-80C0-161E5E19EEAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF9648AA-3C16-46AD-80C0-161E5E19EEAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEBA4CB8-633A-4819-9F1A-25DA45EBA410}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEBA4CB8-633A-4819-9F1A-25DA45EBA410}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEBA4CB8-633A-4819-9F1A-25DA45EBA410}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEBA4CB8-633A-4819-9F1A-25DA45EBA410}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CEEAA302-1636-455B-98AA-84FE47E940E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CEEAA302-1636-455B-98AA-84FE47E940E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CEEAA302-1636-455B-98AA-84FE47E940E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CEEAA302-1636-455B-98AA-84FE47E940E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51E1A61A-DB07-4199-A910-1A803F890312}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51E1A61A-DB07-4199-A910-1A803F890312}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51E1A61A-DB07-4199-A910-1A803F890312}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51E1A61A-DB07-4199-A910-1A803F890312}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D849E09D-26C0-4AFA-A235-828C77649A5C} = {CB07467A-C5E7-4984-A588-80DEFBD1DF95}
+		{DF9648AA-3C16-46AD-80C0-161E5E19EEAE} = {CB07467A-C5E7-4984-A588-80DEFBD1DF95}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E2814E7A-3B8C-4A35-897E-779B6062BF5C}
+	EndGlobalSection
+EndGlobal
