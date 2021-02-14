@@ -33,6 +33,10 @@ namespace Archive.BlockedCompressing.Base
                     thread.Start(threadContext);
                 }
             }
+            catch(Exception ex)
+            {
+
+            }
             finally
             {
                 _sema.Release();
@@ -42,7 +46,9 @@ namespace Archive.BlockedCompressing.Base
 
         protected void WaitAllThreads()
         {
+            _sema.WaitOne();
             SpinWait.SpinUntil(() => _activeThreadCounter == 0);
+            _sema.Release();
         }
 
         private void Process(object obj)
