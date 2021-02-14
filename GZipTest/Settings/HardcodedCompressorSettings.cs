@@ -5,9 +5,9 @@ namespace GZipTest.Settings
 {
     public class HardcodedCompressorSettings : ICompressingSettings
     {
-        public int BytesToRead { get; } = 3000;
+        public int BytesToRead { get; } = 40000;
 
-        public int MaximumThreadsToUse { get; } = 1;
+        public int MaximumThreadsToUse { get; } = 4;
 
         public CompressionLevel CompressionLevel { get; } = CompressionLevel.Fastest;
     }

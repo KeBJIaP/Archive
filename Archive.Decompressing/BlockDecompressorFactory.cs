@@ -1,20 +1,31 @@
-﻿using Archive.Common.Containers.UnityContainers;
+﻿using Archive.Application.Common;
+using Archive.BlockedCompressing.Base;
+using Archive.Common.Containers.UnityContainers;
 using System;
 
 namespace Archive.Decompressing
 {
     public class BlockDecompressorFactory : Factory, IDecompressorFactory
     {
-        public BlockDecompressorFactory() : base()
+        public BlockDecompressorFactory(
+            ICompressingSettings compressionSettings,
+            IAppSettings settings
+            ) : base(
+                RegInfo.Create<ICompressingSettings>(compressionSettings),
+                RegInfo.Create<IAppSettings>(settings)
+                )
         {
-
         }
 
         public IFileDecompressor Create()
         {
             using (var cont = GetContainer())
             {
-                return cont.Resolve<>();
+                cont.Register<IDecompressedFileWriter, DecompressedFileWriter>();
+                cont.Register<IFileWriteStrategy, DecompressionFileWriteStrategy>();
+                cont.Register<ICompressedFileReader, CompressedFileReader>();
+
+                return cont.Resolve<FileDecompressor>();
             }
         }
     }

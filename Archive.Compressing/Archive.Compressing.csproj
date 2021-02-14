@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="BlockCompressor.cs" />
     <Compile Include="BlockedCompressorFactory.cs" />
+    <Compile Include="CompressionFileWriteStrategy.cs" />
     <Compile Include="CompressionException.cs" />
     <Compile Include="ICompressorFactory.cs" />
     <Compile Include="IFileCompressor.cs" />
@@ -54,6 +55,10 @@
     <ProjectReference Include="..\Archive.Application.Common\Archive.Application.Common.csproj">
       <Project>{feba4cb8-633a-4819-9f1a-25da45eba410}</Project>
       <Name>Archive.Application.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Archive.BlockedCompressing.Base\Archive.BlockedCompressing.Base.csproj">
+      <Project>{d96ed470-6e16-4c2e-9a49-a93884052c35}</Project>
+      <Name>Archive.BlockedCompressing.Base</Name>
     </ProjectReference>
     <ProjectReference Include="..\Archive.Common.Containers.UnityContainers\Archive.Common.Containers.UnityContainers.csproj">
       <Project>{df9648aa-3c16-46ad-80c0-161e5e19eeae}</Project>

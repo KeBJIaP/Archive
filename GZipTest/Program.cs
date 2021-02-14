@@ -16,7 +16,6 @@ namespace GZipTest
     {
         static void Main(string[] args)
         {
-
             var arch = new ArchiverUnityFactory().Create();
             Console.WriteLine(arch.Start());
         }

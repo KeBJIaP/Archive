@@ -9,12 +9,17 @@ namespace GZipTest.Settings
 
         public string ResultFile { get; }
 
-        public ApplicationMode Mode { get; } = ApplicationMode.Compress;
+        public ApplicationMode Mode { get; }
 
         public HardcodedCompressAppSettings()
         {
-            SourceFile = Path.Combine(System.Environment.CurrentDirectory, "examples", "ToArchive.bin");
-            ResultFile = Path.Combine(System.Environment.CurrentDirectory, "examples", "Result.arch");
+            //SourceFile = Path.Combine(System.Environment.CurrentDirectory, "examples", "123.txt");
+            //ResultFile = Path.Combine(System.Environment.CurrentDirectory, "examples", "Result.arch");
+            //Mode = ApplicationMode.Compress;
+
+            SourceFile = Path.Combine(System.Environment.CurrentDirectory, "examples", "Result.arch");
+            ResultFile = Path.Combine(System.Environment.CurrentDirectory, "examples", "222.txt");
+            Mode = ApplicationMode.Decompress;
         }
     }
 }

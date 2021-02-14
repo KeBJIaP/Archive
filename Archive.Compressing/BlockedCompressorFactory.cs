@@ -1,4 +1,5 @@
 ﻿using Archive.Application.Common;
+using Archive.BlockedCompressing.Base;
 using Archive.Common.Containers.UnityContainers;
 using System;
 using System.Collections.Generic;
@@ -17,13 +18,14 @@ namespace Archive.Compressing
                 RegInfo.Create<ICompressingSettings>(compressingSettings)
                 )
         {
-
         }
+
         public IFileCompressor Create()
         {
             using (var cont = GetContainer())
             {
-                cont.Register<IOutputCompressedFileWriter, OutputCompressedFileWriter>();
+                cont.RegisterExternallyControlledSingletone<IOutputCompressedFileWriter, OutputCompressedFileWriter>();
+                cont.Register<IFileWriteStrategy, CompressionFileWriteStrategy>();
 
                 return cont.Resolve<BlockCompressor>();
             }

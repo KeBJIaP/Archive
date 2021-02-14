@@ -1,4 +1,5 @@
 ﻿using Archive.Application.Common;
+using Archive.BlockedCompressing.Base;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -12,26 +13,22 @@ namespace Archive.Compressing
     /// Поблочно сжимает файл
     /// Не переиспользуется
     /// </summary>
-    public class BlockCompressor : IFileCompressor
+    public class BlockCompressor : BlockingWorker, IFileCompressor
     {
         private readonly IAppSettings _fileSettings;
         private readonly ICompressingSettings _compressingSettings;
         private readonly IOutputCompressedFileWriter _outputFileWriter;
-        private readonly Semaphore _sema;
 
-        private int _activeThreadCounter = 0;
 
         public BlockCompressor(
             IAppSettings fileSettings,
             ICompressingSettings compressingSettings,
             IOutputCompressedFileWriter outputFileWriter)
+            : base(compressingSettings)
         {
             _fileSettings = fileSettings ?? throw new System.ArgumentNullException(nameof(fileSettings));
             _outputFileWriter = outputFileWriter ?? throw new ArgumentNullException(nameof(outputFileWriter));
             _compressingSettings = compressingSettings ?? throw new System.ArgumentNullException(nameof(compressingSettings));
-
-            var semaphoreCount = _compressingSettings.MaximumThreadsToUse;
-            _sema = new Semaphore(semaphoreCount, semaphoreCount);
         }
 
         public bool Compress()
@@ -52,91 +49,44 @@ namespace Archive.Compressing
             }
 
             //Ждем пока все потоки закончат
-            SpinWait.SpinUntil(() => _activeThreadCounter == 0);
+            WaitAllThreads();
 
             return true;
         }
 
-        private void StartProcessing(byte[] bytes, int blockNumber)
+        protected override void ProcessDataBlock(BlockData compressData)
         {
-            //TPL нельзя
-            //синхронизируем по количеству потоков
-            if (_sema.WaitOne())
+            //берем пачку данных, компрессим и суем в очередь на запись в выходной файл
+            using (var dataToCompressStream = new MemoryStream(compressData.BytesToCompress))
             {
-                var thread = new Thread(new ParameterizedThreadStart(DoCompressAndQueue));
-                var threadContext = new CompressData(thread.ManagedThreadId, bytes, blockNumber);
-                Interlocked.Increment(ref _activeThreadCounter);
-                thread.Start(threadContext);
-            }
-        }
-
-        private void DoCompressAndQueue(object obj)
-        {
-            var compressData = (CompressData)obj;
-            try
-            {
-                //берем пачку данных, компрессим и суем в очередь на запись в выходной файл
-                using (var dataToCompressStream = new MemoryStream(compressData.BytesToCompress))
+                var dataToWriteStream = new MemoryStream();
+                var br = new BinaryReader(dataToWriteStream);
+                //gzipStream надо закрывать первым
+                using (var gzipStream = new GZipStream(dataToWriteStream, CompressionMode.Compress))
                 {
-                    var dataToWriteStream = new MemoryStream();
-                    var br = new BinaryReader(dataToWriteStream);
-                    //gzipStream надо закрывать первым
-                    using (var gzipStream = new GZipStream(dataToWriteStream, CompressionMode.Compress))
-                    {
-                        dataToCompressStream.CopyTo(gzipStream);
-                        gzipStream.Flush();
-                    }
-
-                    var result = dataToWriteStream.ToArray();
-
-                    //получили порцию данных - записали в выходной файл
-                    _outputFileWriter.QueueWrite(compressData.BlockNum, result);
-
-                    dataToWriteStream.Flush();
-                    br.Dispose();
-                    dataToWriteStream.Dispose();
+                    dataToCompressStream.CopyTo(gzipStream);
+                    gzipStream.Flush();
                 }
+
+                var result = dataToWriteStream.ToArray();
+
+                //получили порцию данных - записали в выходной файл
+                _outputFileWriter.QueueWrite(compressData.BlockNum, result);
+
+                dataToWriteStream.Flush();
+                br.Dispose();
+                dataToWriteStream.Dispose();
             }
-            finally
-            {
-                _sema.Release();
-                Interlocked.Decrement(ref _activeThreadCounter);
-            }
+
         }
 
-        #region Dispose
-        ~BlockCompressor()
+        protected override void Dispose(bool disposing)
         {
-            Dispose(false);
-        }
+            base.Dispose(disposing);
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
             if (disposing)
             {
-                _sema.Dispose();
                 _outputFileWriter.Dispose();
-            }
-        }
-        #endregion
-
-        private class CompressData
-        {
-            public int ThreadId { get; }
-            public byte[] BytesToCompress { get; }
-            public int BlockNum { get; }
-
-            public CompressData(int threadId, byte[] bytesToCompress, int blockNum)
-            {
-                ThreadId = threadId;
-                BytesToCompress = bytesToCompress;
-                BlockNum = blockNum;
             }
         }
     }

@@ -20,6 +20,11 @@ namespace Archive.Decompressing
             _fileStream = File.OpenRead(_settings.SourceFile);
         }
 
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
         public IEnumerable<byte[]> ReadByteBlocks()
         {
             using (var br = new BinaryReader(_fileStream))
