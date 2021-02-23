@@ -2,6 +2,8 @@
 using Archive.BlockedCompressing.Base.Exceptions;
 using System.Collections.Concurrent;
 using System.IO;
+using System.Linq;
+using System.Threading;
 
 namespace Archive.BlockedCompressing.Base
 {
@@ -16,6 +18,8 @@ namespace Archive.BlockedCompressing.Base
         private readonly BinaryWriter _binaryWriter;
         private readonly IFileWriteStrategy _writeStrategy;
         private int _currentPosition = 0;
+
+        protected bool IsWriting => _dict.Keys.Any();
 
         public FileWriter(IAppSettings settings, IFileWriteStrategy writeStrategy)
         {
@@ -33,12 +37,12 @@ namespace Archive.BlockedCompressing.Base
                 throw new WriteFileException();
             }
             //пыиаемся процессить следующий блок
-            TryProcessNext();
+            ProcessNext();
         }
 
-        private void TryProcessNext()
+        private void ProcessNext()
         {
-            if (_dict.TryRemove(_currentPosition, out var bytes))
+            while (_dict.TryRemove(_currentPosition, out var bytes))
             {
                 //удалось получить следующий блок
                 _writeStrategy.Write(_binaryWriter, bytes);

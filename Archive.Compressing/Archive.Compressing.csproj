@@ -42,12 +42,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BlockCompressor.cs" />
-    <Compile Include="BlockedCompressorFactory.cs" />
+    <Compile Include="Compression\IDecompressionStrategy.cs" />
+    <Compile Include="FileBlockedCompressorFactory.cs" />
+    <Compile Include="CompressingSource\FileBlocksToCompressSource.cs" />
+    <Compile Include="CompressingSource\IBlocksToCompressSource.cs" />
     <Compile Include="CompressionFileWriteStrategy.cs" />
     <Compile Include="CompressionException.cs" />
+    <Compile Include="Compression\GzipCompressionStrategy.cs" />
+    <Compile Include="Compression\ICompressionStrategy.cs" />
     <Compile Include="ICompressorFactory.cs" />
     <Compile Include="IFileCompressor.cs" />
-    <Compile Include="IOutputCompressedFileWriter.cs" />
+    <Compile Include="IOutputWriter.cs" />
     <Compile Include="OutputCompressedFileWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

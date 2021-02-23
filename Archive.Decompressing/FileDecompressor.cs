@@ -1,5 +1,6 @@
 ﻿using Archive.Application.Common;
 using Archive.BlockedCompressing.Base;
+using Archive.Compressing.Compression;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,16 +17,22 @@ namespace Archive.Decompressing
         private readonly ICompressedFileReader _compressedFileReader;
         private readonly ICompressingSettings _compressingSettings;
         private readonly IDecompressedFileWriter _decompressedFileWriter;
+        private readonly ILogger _logger;
+        private readonly IDecompressionStrategy _blockDecompressionStrategy;
 
         public FileDecompressor(
             ICompressingSettings compressingSettings,
             ICompressedFileReader compressedFileReader,
-            IDecompressedFileWriter decompressedFileWriter)
-            : base(compressingSettings)
+            IDecompressedFileWriter decompressedFileWriter,
+            IDecompressionStrategy blockDecompressionStrategy,
+            ILogger logger)
+                : base(compressingSettings)
         {
             _compressedFileReader = compressedFileReader ?? throw new ArgumentNullException(nameof(compressedFileReader));
             _compressingSettings = compressingSettings ?? throw new System.ArgumentNullException(nameof(compressingSettings));
             _decompressedFileWriter = decompressedFileWriter;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _blockDecompressionStrategy = blockDecompressionStrategy ?? throw new ArgumentNullException(nameof(blockDecompressionStrategy));
         }
 
         public bool Decompress()
@@ -33,33 +40,24 @@ namespace Archive.Decompressing
             int index = 0;
             foreach (var bytes in _compressedFileReader.ReadByteBlocks())
             {
+                _logger.Debug($"Обрабатываем блок {index}");
                 StartProcessing(bytes, index++);
             }
-
+            //Ждем пока все потоки обработки закончат работу
             WaitAllThreads();
+            //Ждем пока очередь записи в файл кончится
+            SpinWait.SpinUntil(() => !_decompressedFileWriter.IsWriting);
+
+            _logger.Debug($"При выходе из декомпрессора index = {index}");
 
             return true;
         }
 
         protected override void ProcessDataBlock(BlockData block)
         {
-            var data = block.BytesToCompress;
-            var ms = new MemoryStream(data);
-            var outputStream = new MemoryStream();
+            var result = _blockDecompressionStrategy.Decompress(block.Bytes);
 
-            using (var gzipStream = new GZipStream(ms, CompressionMode.Decompress))
-            {
-                gzipStream.CopyTo(outputStream);
-                gzipStream.Flush();
-            }
-
-            //прочитали порцию данных
-            var result = outputStream.ToArray();
-            //можно и записать в выходную штуку
             _decompressedFileWriter.QueueWrite(block.BlockNum, result);
-
-            ms.Dispose();
-            outputStream.Dispose();
         }
 
         protected override void Dispose(bool disposing)

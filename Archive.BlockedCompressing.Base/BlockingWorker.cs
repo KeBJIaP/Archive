@@ -23,7 +23,6 @@ namespace Archive.BlockedCompressing.Base
         {
             try
             {
-                //TPL нельзя
                 //синхронизируем по количеству потоков
                 if (_sema.WaitOne())
                 {
@@ -32,10 +31,6 @@ namespace Archive.BlockedCompressing.Base
                     Interlocked.Increment(ref _activeThreadCounter);
                     thread.Start(threadContext);
                 }
-            }
-            catch(Exception ex)
-            {
-
             }
             finally
             {

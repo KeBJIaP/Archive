@@ -9,11 +9,13 @@ namespace Archive.Compressing
     /// Записывает сжжатые данные по схеме: размер блока + блок
     /// Ожидает запись каждого блока по очереди
     /// </summary>
-    public class OutputCompressedFileWriter : FileWriter, IOutputCompressedFileWriter
+    public class OutputCompressedFileWriter : FileWriter, IOutputWriter
     {
+        bool IOutputWriter.IsWriting => IsWriting;
+
         public OutputCompressedFileWriter(
-            IAppSettings settings, 
-            IFileWriteStrategy writeStrategy) 
+            IAppSettings settings,
+            IFileWriteStrategy writeStrategy)
             : base(settings, writeStrategy)
         {
         }

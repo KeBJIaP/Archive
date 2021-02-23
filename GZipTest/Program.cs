@@ -14,10 +14,23 @@ namespace GZipTest
 {
     class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
-            var arch = new ArchiverUnityFactory().Create();
-            Console.WriteLine(arch.Start());
+            try
+            {
+                var arch = new ArchiverUnityFactory().Create();
+                return arch.Start();
+            }
+            catch (ModeParseException)
+            {
+                Console.WriteLine(Properties.Resources.ModeParseError);
+                return 0;
+            }
+            catch (ArgsLengthException)
+            {
+                Console.WriteLine(Properties.Resources.IncorrectArgsLength);
+                return 0;
+            }
         }
     }
 }

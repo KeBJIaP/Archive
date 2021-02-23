@@ -6,8 +6,10 @@ namespace Archive.Compressing
     /// Пишет в выходной файл компресснутые данные.
     /// Пишет по очереди, ждет все блоки
     /// </summary>
-    public interface IOutputCompressedFileWriter : IDisposable
+    public interface IOutputWriter : IDisposable
     {
+        bool IsWriting { get; }
+
         void QueueWrite(int blockNum, byte[] bytes);
     }
 }

@@ -9,13 +9,13 @@ namespace Archive.BlockedCompressing.Base
     public class BlockData
     {
         public int ThreadId { get; }
-        public byte[] BytesToCompress { get; }
+        public byte[] Bytes { get; }
         public int BlockNum { get; }
 
         public BlockData(int threadId, byte[] bytesToCompress, int blockNum)
         {
             ThreadId = threadId;
-            BytesToCompress = bytesToCompress;
+            Bytes = bytesToCompress;
             BlockNum = blockNum;
         }
     }

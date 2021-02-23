@@ -126,6 +126,12 @@
   <data name="FileHasBeenDeleted" xml:space="preserve">
     <value>Файл был успешно удален</value>
   </data>
+  <data name="IncorrectArgsLength" xml:space="preserve">
+    <value>Строка аргументов имела неверный формат. Правильный формат : GZipTest.exe compress/decompress [имя исходного файла] [имя результирующего файла]</value>
+  </data>
+  <data name="ModeParseError" xml:space="preserve">
+    <value>Не удалось прочитать режим работы</value>
+  </data>
   <data name="ResultFileExists" xml:space="preserve">
     <value>Результирующий файл '{0}' уже существует</value>
   </data>

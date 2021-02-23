@@ -88,6 +88,24 @@ namespace GZipTest.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Строка аргументов имела неверный формат. Правильный формат : GZipTest.exe compress/decompress [имя исходного файла] [имя результирующего файла].
+        /// </summary>
+        internal static string IncorrectArgsLength {
+            get {
+                return ResourceManager.GetString("IncorrectArgsLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Не удалось прочитать режим работы.
+        /// </summary>
+        internal static string ModeParseError {
+            get {
+                return ResourceManager.GetString("ModeParseError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Результирующий файл &apos;{0}&apos; уже существует.
         /// </summary>
         internal static string ResultFileExists {

@@ -1,5 +1,7 @@
 ﻿using Archive.Application.Common;
 using Archive.BlockedCompressing.Base;
+using Archive.Compressing.CompressingSource;
+using Archive.Compressing.Compression;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -15,69 +17,47 @@ namespace Archive.Compressing
     /// </summary>
     public class BlockCompressor : BlockingWorker, IFileCompressor
     {
-        private readonly IAppSettings _fileSettings;
-        private readonly ICompressingSettings _compressingSettings;
-        private readonly IOutputCompressedFileWriter _outputFileWriter;
-
+        private readonly IOutputWriter _outputFileWriter;
+        private readonly ILogger _logger;
+        private readonly IBlocksToCompressSource _inputBlocksSource;
+        private readonly ICompressionStrategy _blockCompressionStrategy;
 
         public BlockCompressor(
-            IAppSettings fileSettings,
             ICompressingSettings compressingSettings,
-            IOutputCompressedFileWriter outputFileWriter)
-            : base(compressingSettings)
+            IOutputWriter outputFileWriter,
+            ILogger logger,
+            IBlocksToCompressSource inputBlocksSource,
+            ICompressionStrategy blockCompressionStrategy)
+                : base(compressingSettings)
         {
-            _fileSettings = fileSettings ?? throw new System.ArgumentNullException(nameof(fileSettings));
             _outputFileWriter = outputFileWriter ?? throw new ArgumentNullException(nameof(outputFileWriter));
-            _compressingSettings = compressingSettings ?? throw new System.ArgumentNullException(nameof(compressingSettings));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _inputBlocksSource = inputBlocksSource ?? throw new ArgumentNullException(nameof(inputBlocksSource));
+            _blockCompressionStrategy = blockCompressionStrategy ?? throw new ArgumentNullException(nameof(blockCompressionStrategy));
         }
 
         public bool Compress()
         {
-            //TODO вынести чтение в зависимость
-            //Открываем стрим файла и обрабатываем блоки
-            using (var fileStream = File.OpenRead(_fileSettings.SourceFile))
-            using (var br = new BinaryReader(fileStream))
-            {
-                var index = 0;
-                while (br.PeekChar() != -1)
-                {
-                    //читаем блоки по сколько-то там байт
-                    var bytes = br.ReadBytes(_compressingSettings.BytesToRead);
+            var index = 0;
 
-                    StartProcessing(bytes, index++);
-                }
+            foreach (var block in _inputBlocksSource.ReadAllBlocks())
+            {
+                StartProcessing(block, index++);
             }
 
             //Ждем пока все потоки закончат
             WaitAllThreads();
+            //Ждем пока очередь записи в файл кончится
+            SpinWait.SpinUntil(() => !_outputFileWriter.IsWriting);
+            _logger.Debug($"При выходе из компрессора index = {index}");
 
             return true;
         }
 
         protected override void ProcessDataBlock(BlockData compressData)
         {
-            //берем пачку данных, компрессим и суем в очередь на запись в выходной файл
-            using (var dataToCompressStream = new MemoryStream(compressData.BytesToCompress))
-            {
-                var dataToWriteStream = new MemoryStream();
-                var br = new BinaryReader(dataToWriteStream);
-                //gzipStream надо закрывать первым
-                using (var gzipStream = new GZipStream(dataToWriteStream, CompressionMode.Compress))
-                {
-                    dataToCompressStream.CopyTo(gzipStream);
-                    gzipStream.Flush();
-                }
-
-                var result = dataToWriteStream.ToArray();
-
-                //получили порцию данных - записали в выходной файл
-                _outputFileWriter.QueueWrite(compressData.BlockNum, result);
-
-                dataToWriteStream.Flush();
-                br.Dispose();
-                dataToWriteStream.Dispose();
-            }
-
+            var result = _blockCompressionStrategy.Compress(compressData.Bytes);
+            _outputFileWriter.QueueWrite(compressData.BlockNum, result);
         }
 
         protected override void Dispose(bool disposing)

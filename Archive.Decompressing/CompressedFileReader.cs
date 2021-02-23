@@ -22,14 +22,14 @@ namespace Archive.Decompressing
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            _fileStream?.Dispose();
         }
 
         public IEnumerable<byte[]> ReadByteBlocks()
         {
             using (var br = new BinaryReader(_fileStream))
             {
-                while (br.PeekChar() != -1)
+                while (br.BaseStream.Position != br.BaseStream.Length)
                 {
                     var blockSize = br.ReadInt32();
                     yield return br.ReadBytes(blockSize);

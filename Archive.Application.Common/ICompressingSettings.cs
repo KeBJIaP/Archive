@@ -6,6 +6,5 @@ namespace Archive.Application.Common
     {
         int BytesToRead { get; }
         int MaximumThreadsToUse { get; }
-        CompressionLevel CompressionLevel { get; }
     }
 }

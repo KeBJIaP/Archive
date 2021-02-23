@@ -69,6 +69,10 @@
       <Project>{d849e09d-26c0-4afa-a235-828c77649a5c}</Project>
       <Name>Archive.Common.Containers</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Archive.Compressing\Archive.Compressing.csproj">
+      <Project>{ceeaa302-1636-455b-98aa-84fe47e940e3}</Project>
+      <Name>Archive.Compressing</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
