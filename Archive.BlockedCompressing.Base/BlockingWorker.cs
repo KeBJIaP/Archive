@@ -21,21 +21,13 @@ namespace Archive.BlockedCompressing.Base
 
         protected void StartProcessing(byte[] bytes, int blockNumber)
         {
-            try
+            Interlocked.Increment(ref _activeThreadCounter);
+            //синхронизируем по количеству потоков
+            if (_sema.WaitOne())
             {
-                //синхронизируем по количеству потоков
-                if (_sema.WaitOne())
-                {
-                    var thread = new Thread(new ParameterizedThreadStart(Process));
-                    var threadContext = new BlockData(thread.ManagedThreadId, bytes, blockNumber);
-                    Interlocked.Increment(ref _activeThreadCounter);
-                    thread.Start(threadContext);
-                }
-            }
-            finally
-            {
-                _sema.Release();
-                Interlocked.Decrement(ref _activeThreadCounter);
+                var thread = new Thread(new ParameterizedThreadStart(Process));
+                var threadContext = new BlockData(thread.ManagedThreadId, bytes, blockNumber);
+                thread.Start(threadContext);
             }
         }
 
@@ -48,7 +40,15 @@ namespace Archive.BlockedCompressing.Base
 
         private void Process(object obj)
         {
-            ProcessDataBlock((BlockData)obj);
+            try
+            {
+                ProcessDataBlock((BlockData)obj);
+            }
+            finally
+            {
+                _sema.Release();
+                Interlocked.Decrement(ref _activeThreadCounter);
+            }
         }
 
         protected abstract void ProcessDataBlock(BlockData obj);
